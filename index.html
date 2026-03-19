@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sesión 2: Lange y Escalación | UNIPAZ 2026</title>
+<meta name="description" content="Métodos de Lange y Escalación — Tamaño Óptimo del Proyecto. Formulación y Evaluación de Proyectos, UNIPAZ.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a1a;--s:#12122a;--c:#1a1a3e;--b:#2a2a5e;--t:#e0e0ff;--m:#8888bb;
+--a:#6c5ce7;--a2:#a29bfe;--g:#00cec9;--ok:#55efc4;--no:#ff7675;--w:#fdcb6e;--o:#e17055;
+--p:#fd79a8;--teal:#00b894}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow:hidden}
+#app{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.slide{max-width:1100px;width:100%;min-height:80vh;background:var(--s);border:1px solid var(--b);
+border-radius:24px;padding:50px 60px;position:relative;animation:fadeIn .5s;display:flex;
+flex-direction:column;justify-content:center}
+.slide.scrollable{overflow-y:auto;max-height:95vh;justify-content:flex-start;padding-top:70px;padding-bottom:130px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.topbar{position:absolute;top:20px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:center;z-index:10}
+.badge{padding:6px 16px;border-radius:20px;font-size:.7rem;font-weight:700;background:rgba(108,92,231,.2);
+color:var(--a2);letter-spacing:1px;text-transform:uppercase}
+.counter{font-size:.8rem;color:var(--m)}
+.pbar-top{position:absolute;top:0;left:0;right:0;height:4px;background:var(--c);border-radius:24px 24px 0 0;overflow:hidden;z-index:11}
+.pfill-top{height:100%;background:linear-gradient(90deg,var(--a),var(--g));transition:width .5s}
+h1.main{font-size:2.6rem;font-weight:900;line-height:1.2;margin-bottom:16px;
+background:linear-gradient(135deg,var(--a2),var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2.section{font-size:1.7rem;font-weight:800;color:var(--a2);margin-bottom:18px}
+p.desc{font-size:.95rem;color:var(--m);line-height:1.8;margin-bottom:14px}
+.highlight{background:linear-gradient(135deg,rgba(108,92,231,.15),rgba(0,206,201,.15));
+border:1px solid var(--b);border-radius:16px;padding:18px 22px;margin:14px 0}
+.highlight strong{color:var(--g)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:12px 0}
+.gcard{background:var(--c);border:1px solid var(--b);border-radius:16px;padding:18px;transition:.3s;cursor:default}
+.gcard:hover{border-color:var(--a);transform:translateY(-4px);box-shadow:0 8px 25px rgba(108,92,231,.2)}
+.gcard .icon{font-size:1.8rem;margin-bottom:8px}
+.gcard .title{font-size:.9rem;font-weight:700;color:var(--t);margin-bottom:5px}
+.gcard .text{font-size:.78rem;color:var(--m);line-height:1.55}
+.flow{display:flex;align-items:center;justify-content:center;gap:0;margin:18px 0;flex-wrap:wrap}
+.flow-item{background:var(--c);border:2px solid var(--b);border-radius:14px;padding:12px 16px;
+text-align:center;min-width:110px;transition:.3s}
+.flow-item:hover{border-color:var(--g);transform:scale(1.05)}
+.flow-item .fi-icon{font-size:1.4rem;margin-bottom:5px}
+.flow-item .fi-text{font-size:.72rem;font-weight:700;color:var(--t)}
+.flow-arrow{font-size:1.4rem;color:var(--a2);margin:0 3px}
+.list-item{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:var(--c);
+border-radius:12px;margin:7px 0;border-left:3px solid var(--a);animation:slideRight .4s both}
+.list-item .li-num{min-width:30px;height:30px;border-radius:9px;background:var(--a);display:flex;
+align-items:center;justify-content:center;font-weight:800;font-size:.78rem;color:#fff;flex-shrink:0}
+.list-item .li-content{flex:1}
+.list-item .li-title{font-weight:700;font-size:.88rem;margin-bottom:3px}
+.list-item .li-desc{font-size:.78rem;color:var(--m);line-height:1.5}
+.nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+padding:18px 30px 22px;background:linear-gradient(0deg,var(--s) 70%,transparent);border-radius:0 0 24px 24px;z-index:10}
+.btn{padding:11px 26px;border-radius:14px;border:none;font-family:'Inter';font-size:.88rem;font-weight:700;cursor:pointer;transition:.3s}
+.btn-primary{background:linear-gradient(135deg,var(--a),var(--g));color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(108,92,231,.4)}
+.btn-ghost{background:transparent;border:2px solid var(--b);color:var(--m)}
+.btn-ghost:hover{border-color:var(--a);color:var(--t)}
+.game-area{background:var(--c);border:2px solid var(--b);border-radius:20px;padding:28px;margin:14px 0;position:relative;z-index:5}
+.game-title{font-size:1.05rem;font-weight:800;color:var(--w);margin-bottom:14px;text-align:center}
+.opt{padding:13px 17px;border-radius:14px;border:2px solid var(--b);background:rgba(26,26,62,.8);
+cursor:pointer;transition:.3s;font-size:.86rem;line-height:1.5;display:flex;gap:11px;align-items:center;margin:7px 0}
+.opt:hover:not(.disabled){border-color:var(--a);background:rgba(108,92,231,.1)}
+.opt.correct{border-color:var(--ok);background:rgba(85,239,196,.1)}
+.opt.wrong{border-color:var(--no);background:rgba(255,118,117,.1)}
+.opt.disabled{cursor:default;opacity:.7}
+.opt-letter{min-width:28px;height:28px;border-radius:8px;background:var(--b);display:flex;
+align-items:center;justify-content:center;font-weight:800;font-size:.73rem;flex-shrink:0}
+.feedback{margin-top:12px;padding:13px;border-radius:12px;font-size:.84rem;line-height:1.6;animation:fadeIn .3s}
+.feedback.ok{background:rgba(85,239,196,.08);border:1px solid rgba(85,239,196,.2);color:var(--ok)}
+.feedback.bad{background:rgba(255,118,117,.08);border:1px solid rgba(255,118,117,.2);color:var(--no)}
+.tf-btn{padding:15px 30px;border-radius:14px;border:2px solid var(--b);background:var(--c);cursor:pointer;
+font-family:'Inter';font-size:.95rem;font-weight:700;transition:.3s;color:var(--t);flex:1;text-align:center}
+.tf-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(108,92,231,.3)}
+.tf-btn.sel-true{border-color:var(--ok);background:rgba(85,239,196,.15);color:var(--ok)}
+.tf-btn.sel-false{border-color:var(--no);background:rgba(255,118,117,.15);color:var(--no)}
+.match-col{display:flex;flex-direction:column;gap:7px}
+.match-item{padding:11px 14px;border-radius:12px;border:2px solid var(--b);background:var(--c);
+cursor:pointer;transition:.3s;font-size:.8rem;text-align:center}
+.match-item:hover{border-color:var(--a)}
+.match-item.selected{border-color:var(--w);background:rgba(253,203,110,.1);box-shadow:0 0 15px rgba(253,203,110,.2)}
+.match-item.matched{border-color:var(--ok);background:rgba(85,239,196,.1);cursor:default}
+.match-item.wrong-flash{animation:wrongShake .5s}
+.drag-label{font-size:.78rem;color:var(--m);margin-bottom:5px;font-weight:600}
+.score-panel{text-align:center;padding:22px;background:var(--c);border-radius:16px;margin:14px 0}
+.score-big{font-size:3.2rem;font-weight:900;background:linear-gradient(135deg,var(--a2),var(--g));
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:bounceIn .5s}
+.score-label{font-size:.95rem;color:var(--m);margin-top:7px}
+.input-field{width:100%;padding:13px 17px;border-radius:14px;border:2px solid var(--b);background:var(--c);
+color:var(--t);font-family:'Inter';font-size:.95rem;outline:none;transition:.3s;margin:7px 0}
+.input-field:focus{border-color:var(--a);box-shadow:0 0 20px rgba(108,92,231,.2)}
+.input-field::placeholder{color:var(--m)}
+.status-msg{text-align:center;padding:9px;font-size:.84rem;color:var(--m);margin-top:11px}
+.r-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:10px;font-size:.84rem}
+.r-item.ok{background:rgba(85,239,196,.08)}
+.r-item.bad{background:rgba(255,118,117,.08)}
+.formula{background:linear-gradient(135deg,#1a1a5e,#0d2137);border:1px solid var(--a);
+border-radius:14px;padding:16px 22px;margin:12px 0;text-align:center;font-size:1.05rem;
+font-weight:700;color:var(--a2);letter-spacing:.5px;font-family:'Courier New',monospace}
+.step-box{background:rgba(26,26,62,.6);border-left:4px solid var(--g);border-radius:0 12px 12px 0;
+padding:12px 16px;margin:8px 0}
+.step-box .step-n{color:var(--g);font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.step-box .step-c{font-size:.84rem;line-height:1.75;color:var(--t)}
+.defcard{background:rgba(10,10,40,.8);border:1px solid var(--b);border-radius:14px;padding:14px 18px;margin:7px 0}
+.defcard-sym{font-size:1.4rem;font-weight:900;color:var(--a2);font-family:'Courier New',monospace;margin-bottom:4px}
+.defcard-name{font-size:.82rem;font-weight:700;color:var(--w);margin-bottom:5px}
+.defcard-def{font-size:.78rem;color:var(--m);line-height:1.6}
+.defcard-ex{font-size:.75rem;color:var(--ok);margin-top:5px;font-style:italic}
+.table-std{width:100%;border-collapse:collapse;font-size:.8rem;margin:10px 0}
+.table-std th{background:rgba(108,92,231,.3);color:var(--a2);padding:8px 10px;text-align:left;font-weight:700}
+.table-std td{padding:7px 10px;border-bottom:1px solid rgba(42,42,94,.8);color:var(--t)}
+.table-std tr:last-child td{border-bottom:none}
+.table-std tr.best td{background:rgba(0,184,148,.08);color:var(--ok);font-weight:700}
+.table-std tr:hover td{background:rgba(108,92,231,.06)}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.5px}
+.tag-ok{background:rgba(85,239,196,.15);color:var(--ok);border:1px solid rgba(85,239,196,.3)}
+.tag-no{background:rgba(255,118,117,.15);color:var(--no);border:1px solid rgba(255,118,117,.3)}
+.tag-w{background:rgba(253,203,110,.15);color:var(--w);border:1px solid rgba(253,203,110,.3)}
+@media(max-width:768px){
+.slide{padding:28px 20px;min-height:auto}
+h1.main{font-size:1.7rem}
+h2.section{font-size:1.2rem}
+.grid2,.grid3,.grid4{grid-template-columns:1fr}
+.flow{flex-direction:column}
+.flow-arrow{transform:rotate(90deg)}
+.nav{position:relative;margin-top:18px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const SLIDES=[
+{type:'register'},
+{type:'content',badge:'SESIÓN 2 — UNIDAD 2',html:`
+<h1 class="main">⚙️ Métodos de Lange y Escalación</h1>
+<p class="desc" style="font-size:1.05rem;text-align:center">Formulación y Evaluación de Proyectos<br>
+<strong style="color:var(--g)">Sesión 2</strong> — Jueves 19 de Marzo de 2026</p>
+<div class="grid3" style="margin-top:22px">
+<div class="gcard" style="text-align:center;border-color:var(--a)">
+<div class="icon">📐</div><div class="title">MÉTODO DE LANGE</div>
+<div class="text">Compara alternativas de inversión buscando el menor Costo Total (financiero)</div></div>
+<div class="gcard" style="text-align:center;border-color:var(--g)">
+<div class="icon">📏</div><div class="title">MÉTODO DE ESCALACIÓN</div>
+<div class="text">Determina capacidad productiva según equipos reales y turnos de trabajo</div></div>
+<div class="gcard" style="text-align:center;border-color:var(--w)">
+<div class="icon">🏭</div><div class="title">CASOS PROPUESTOS</div>
+<div class="text">Aplicación práctica: cada grupo resuelve un proyecto real de la región</div></div>
+</div>
+<div class="highlight" style="text-align:center;margin-top:10px">
+<p class="desc" style="margin:0">Al finalizar podrán <strong>determinar matemáticamente el tamaño óptimo</strong> de cualquier proyecto productivo.</p></div>
+`},
+{type:'content',badge:'REPASO — SESIÓN ANTERIOR',html:`
+<h2 class="section">🔄 ¿Qué vimos la última clase?</h2>
+<p class="desc">En la Sesión 1 aprendimos que el tamaño de un proyecto depende de <strong style="color:var(--g)">5 factores</strong>. Hoy aprenderemos a CUANTIFICAR esa decisión con métodos matemáticos.</p>
+<div class="grid3" style="margin-bottom:10px">
+<div class="gcard" style="border-left:3px solid var(--a)"><div class="icon">📊</div><div class="title">1. La Demanda</div>
+<div class="text">Tamaño ≤ Demanda insatisfecha. Nunca producir más de lo que el mercado puede absorber.</div></div>
+<div class="gcard" style="border-left:3px solid var(--g)"><div class="icon">🌾</div><div class="title">2. Suministros</div>
+<div class="text">Materia prima disponible en cantidad, calidad y continuidad suficientes.</div></div>
+<div class="gcard" style="border-left:3px solid var(--w)"><div class="icon">🔧</div><div class="title">3. Tecnología</div>
+<div class="text">Los equipos tienen capacidades mínimas y máximas que condicionan el tamaño.</div></div>
+<div class="gcard" style="border-left:3px solid var(--o)"><div class="icon">💰</div><div class="title">4. Financiamiento</div>
+<div class="text">El presupuesto disponible limita el tamaño máximo alcanzable.</div></div>
+<div class="gcard" style="border-left:3px solid var(--no)"><div class="icon">👥</div><div class="title">5. Organización</div>
+<div class="text">Se necesita personal calificado para operar el tamaño propuesto.</div></div>
+</div>
+<div class="highlight"><p class="desc" style="margin:0">💡 Identificados los factores, ahora necesitamos <strong>herramientas matemáticas</strong> para encontrar el tamaño óptimo. Eso es exactamente lo que vamos a aprender hoy.</p></div>
+`},
+{type:'quiz',badge:'🎮 CALENTAMIENTO: REPASO',title:'¿Recuerdas los factores del tamaño?',questions:[
+{q:'Un proyecto puede vender máximo 5.000 unidades/mes (demanda insatisfecha). ¿Cuál es el tamaño máximo recomendado?',o:['10.000 u/mes para tener margen','5.000 u/mes o menos','El que alcance el presupuesto','No importa el tamaño'],c:1,f:'Regla de oro: Tamaño ≤ Demanda Insatisfecha. Producir 10.000 cuando solo puedes vender 5.000 genera 50% de capacidad ociosa y pérdidas.'},
+{q:'¿Cuál de estos SÍ es un factor condicionante del tamaño del proyecto según Baca Urbina?',o:['El nombre del gerente','El color de la fachada','La disponibilidad de materia prima','La altura del edificio'],c:2,f:'Los 5 factores son: demanda, suministros (materia prima), tecnología, financiamiento y organización. La materia prima forma parte del factor "suministros".'},
+{q:'Si el banco solo financia $200 millones pero la planta ideal cuesta $500 millones, ¿qué factor está limitando?',o:['La demanda','Los suministros','El financiamiento','La organización'],c:2,f:'El financiamiento limita el tamaño máximo que se puede alcanzar. La solución puede ser buscar socios, fondos del gobierno (Fondo Emprender, INNpulsa) u otras fuentes.'},
+{q:'¿Cuál es el OBJETIVO de los métodos de Lange y Escalación?',o:['Calcular el precio de venta','Determinar matemáticamente el tamaño óptimo del proyecto','Diseñar la distribución de la planta','Calcular la TIR del proyecto'],c:1,f:'Lange y Escalación son métodos cuantitativos para determinar la CAPACIDAD PRODUCTIVA óptima. Lange desde un enfoque financiero y Escalación desde los equipos disponibles.'}
+]},
+{type:'content',badge:'CONCEPTOS PREVIOS ESENCIALES',html:`
+<h2 class="section">📚 Conceptos que Debes Dominar Primero</h2>
+<p class="desc">Antes de aplicar los métodos, necesitas entender estos conceptos financieros fundamentales:</p>
+<div class="defcard">
+<div class="defcard-sym">💰 Valor del Dinero en el Tiempo</div>
+<div class="defcard-name">¿Por qué $1 hoy vale más que $1 en el futuro?</div>
+<div class="defcard-def">Porque el dinero de hoy puede invertirse y generar rendimientos. $1.000.000 hoy, al 10% anual, se convierte en $1.100.000 el año próximo. Por eso, para comparar dinero en distintos momentos, debemos <strong>traerlo todo a un mismo punto en el tiempo</strong> (generalmente al presente, es decir, "hoy").</div>
+<div class="defcard-ex">Ejemplo: ¿Prefiero que me paguen $5M hoy o $5M en 5 años? → ¡Hoy! Porque de aquí a 5 años esos $5M de hoy se habrían multiplicado.</div>
+</div>
+<div class="defcard">
+<div class="defcard-sym">i — Tasa de Descuento (o Tasa de Interés)</div>
+<div class="defcard-name">El "precio" del dinero en el tiempo</div>
+<div class="defcard-def">Es el porcentaje que se usa para "actualizar" dinero futuro al presente. Representa el rendimiento mínimo que exige el inversionista por arriesgar su capital. También puede ser la tasa de un crédito bancario.</div>
+<div class="defcard-ex">Ejemplo: Si la tasa es 12% anual, significa que $1.000.000 hoy equivale a $1.120.000 en un año. O que $1.120.000 en un año equivale a $1.000.000 hoy.</div>
+</div>
+<div class="defcard">
+<div class="defcard-sym">n — Horizonte del Proyecto (años)</div>
+<div class="defcard-name">¿Por cuántos años evaluamos el proyecto?</div>
+<div class="defcard-def">Es el período de tiempo durante el cual se analiza el proyecto. Generalmente entre 5 y 15 años. Define cuántos pagos anuales de costos operativos hay que considerar.</div>
+<div class="defcard-ex">Ejemplo: Un proyecto a 7 años significa que operará (y tendrá costos) durante 7 años consecutivos.</div>
+</div>
+`},
+{type:'content',badge:'CONCEPTOS PREVIOS — VP Y FA',html:`
+<h2 class="section">📚 Valor Presente y Factor de Anualidad</h2>
+<div class="defcard">
+<div class="defcard-sym">VP — Valor Presente</div>
+<div class="defcard-name">¿Cuánto valen HOY una serie de pagos futuros?</div>
+<div class="defcard-def">Es la conversión de pagos futuros a su equivalente en pesos de <em>hoy</em>, usando una tasa de descuento. Permite comparar dinero de diferentes momentos en la misma unidad.<br><br>
+Si debo pagar $50.000.000 cada año durante 7 años (al 12%), ¿cuánto equivale eso hoy de una sola vez? → Eso es el Valor Presente (VP) de esa serie de pagos.</div>
+<div class="defcard-ex">Analógico: Es como calcular el "precio contado" de una deuda en cuotas. $50M/año × 7 años = $350M en total, pero traídos a hoy al 12% equivalen a solo ~$228M.</div>
+</div>
+<div class="defcard">
+<div class="defcard-sym">FA — Factor de Anualidad</div>
+<div class="defcard-name">El multiplicador que convierte cuotas anuales a valor presente</div>
+<div class="defcard-def">Es un número que, multiplicado por el pago anual constante C, te da directamente el Valor Presente de toda la serie de pagos.<br><br>
+<strong style="color:var(--a2)">Fórmula:</strong> FA = [1 − (1 + i)⁻ⁿ] / i<br><br>
+Donde: <strong style="color:var(--g)">i</strong> = tasa de descuento (decimal, ej: 12% → 0.12) | <strong style="color:var(--w)">n</strong> = número de años<br><br>
+Luego: <strong style="color:var(--ok)">VP(Costos) = Costo anual × FA</strong></div>
+<div class="defcard-ex">Ejemplo: FA(12%, 7 años) = [1−(1.12)⁻⁷]/0.12 = [1−0.4523]/0.12 = 0.5477/0.12 = 4.5638<br>
+Si el costo anual es $50M → VP = $50M × 4.5638 = $228.19M (eso equivale en pesos de hoy a 7 años de $50M/año)</div>
+</div>
+`},
+{type:'content',badge:'MÉTODOS DISPONIBLES',html:`
+<h2 class="section">🎯 ¿Cuándo usar cada método?</h2>
+<p class="desc">Ambos métodos sirven para determinar el tamaño óptimo, pero desde enfoques diferentes:</p>
+<div class="grid2">
+<div class="gcard" style="border-top:3px solid var(--a)">
+<div class="icon">📐</div><div class="title" style="font-size:1rem">Método de Lange</div>
+<div class="text"><strong style="color:var(--a2)">Pregunta que responde:</strong><br>"¿Cuál alternativa de inversión tiene el menor costo total a lo largo del proyecto?"<br><br>
+<strong style="color:var(--g)">Lo que necesito saber:</strong><br>
+✔ Varias alternativas con diferente inversión<br>
+✔ Costo de operación anual de cada alternativa<br>
+✔ Tasa de descuento y horizonte del proyecto<br><br>
+<span class="tag tag-ok">Usa: CT = I₀ + VP(C)</span></div></div>
+<div class="gcard" style="border-top:3px solid var(--g)">
+<div class="icon">📏</div><div class="title" style="font-size:1rem">Método de Escalación</div>
+<div class="text"><strong style="color:var(--g)">Pregunta que responde:</strong><br>"¿Cuántas unidades puede producir esta planta y cuántos turnos necesita para cubrir la demanda?"<br><br>
+<strong style="color:var(--w)">Lo que necesito saber:</strong><br>
+✔ Equipos disponibles y su capacidad (u/hora)<br>
+✔ Producción meta diaria<br>
+✔ Horas por turno y número de turnos posibles<br><br>
+<span class="tag tag-w">Usa: Prod = Cap × Horas × Turnos</span></div></div>
+</div>
+<div class="highlight"><p class="desc" style="margin:0;text-align:center">En la práctica se usan <strong>complementarios</strong>: Lange decide QUÉ nivel tecnológico comprar, Escalación define CÓMO operar esa tecnología para cubrir la demanda.</p></div>
+`},
+{type:'content',badge:'MÉTODO DE LANGE — FUNDAMENTO',html:`
+<h2 class="section">📐 Método de Lange — ¿En qué se basa?</h2>
+<p class="desc">Propuesto por el economista <strong style="color:var(--w)">Oskar Lange</strong>. La idea central es que al comparar alternativas tecnológicas existe un <strong style="color:var(--g)">trade-off</strong> (intercambio) entre inversión y costos operativos:</p>
+<div class="grid2">
+<div class="gcard" style="border-color:var(--no)">
+<div class="icon">🔴</div><div class="title">Alternativa Barata</div>
+<div class="text"><strong>Baja inversión inicial</strong> (I₀ pequeño)<br>→ Equipos básicos, sin tecnología avanzada<br>→ Muchas fallas, procesos lentos, desperdicio<br>→ <strong style="color:var(--no)">Costos de operación ALTOS</strong><br>→ Costo Total al final puede ser MUY alto</div></div>
+<div class="gcard" style="border-color:var(--ok)">
+<div class="icon">🟢</div><div class="title">Alternativa Óptima</div>
+<div class="text"><strong>Inversión equilibrada</strong> (I₀ moderado)<br>→ Tecnología adecuada al proyecto<br>→ Eficiente, confiable, bajo desperdicio<br>→ <strong style="color:var(--ok)">Costos de operación MODERADOS</strong><br>→ <strong>Costo Total MÍNIMO → ESTA ES LA ÓPTIMA</strong></div></div>
+</div>
+<div class="defcard" style="margin-top:10px">
+<div class="defcard-sym">CT = I₀ + VP(C) → MÍNIMO</div>
+<div class="defcard-name">Costo Total = Inversión Inicial + Valor Presente de los costos operativos</div>
+<div class="defcard-def">
+<strong style="color:var(--a2)">I₀:</strong> Lo que pago HOY al comprar los equipos e instalar la planta<br>
+<strong style="color:var(--g)">C:</strong> Lo que pagaré CADA AÑO en mano de obra, energía, mantenimiento, insumos, etc.<br>
+<strong style="color:var(--w)">VP(C):</strong> Valor Presente de todos esos costos anuales = C × FA(i,n)<br>
+<strong style="color:var(--ok)">CT:</strong> Lo que cuesta en total esta alternativa, todo expresado en pesos de HOY</div>
+</div>
+`},
+{type:'content',badge:'LANGE — PROCEDIMIENTO PASO A PASO',html:`
+<h2 class="section">📋 Procedimiento: Método de Lange</h2>
+<div class="list-item" style="animation-delay:.1s"><div class="li-num">1</div><div class="li-content">
+<div class="li-title">Definir las alternativas de inversión</div>
+<div class="li-desc">Listar mínimo 2-3 alternativas con diferente nivel de inversión: por ejemplo, proceso manual, semiautomático y automático. Cada una tiene su propio I₀ (inversión) y C (costo anual de operación).</div></div></div>
+<div class="list-item" style="animation-delay:.2s"><div class="li-num">2</div><div class="li-content">
+<div class="li-title">Calcular el Factor de Anualidad (FA)</div>
+<div class="li-desc">FA = [1 − (1+i)⁻ⁿ] / i &nbsp;→&nbsp; Con la tasa i y los años n del proyecto. Este factor es el mismo para TODAS las alternativas (solo depende de i y n).</div></div></div>
+<div class="list-item" style="animation-delay:.3s"><div class="li-num">3</div><div class="li-content">
+<div class="li-title">Calcular el VP de costos para cada alternativa</div>
+<div class="li-desc">VP(C) = Costo anual (C) × FA &nbsp;→&nbsp; Convierte los pagos anuales futuros a pesos de hoy. Alternativas con equipo más moderno tendrán C más bajo, por tanto VP(C) más bajo.</div></div></div>
+<div class="list-item" style="animation-delay:.4s"><div class="li-num">4</div><div class="li-content">
+<div class="li-title">Calcular el Costo Total (CT) de cada alternativa</div>
+<div class="li-desc">CT = I₀ + VP(C) &nbsp;→&nbsp; Suma la inversión de hoy más el equivalente en pesos de hoy de todos los costos futuros. Esto pone TODAS las alternativas en pie de igualdad para compararlas.</div></div></div>
+<div class="list-item" style="animation-delay:.5s"><div class="li-num">5</div><div class="li-content">
+<div class="li-title">Elegir la alternativa con MENOR CT</div>
+<div class="li-desc">Esa es la alternativa óptima según Lange. No es necesariamente la más barata ni la más cara: es la que minimiza el costo total incluyendo tanto la inversión como la operación.</div></div></div>
+<div class="list-item" style="animation-delay:.6s"><div class="li-num" style="background:var(--gold,#fdcb6e);color:#000">+</div><div class="li-content">
+<div class="li-title">Análisis marginal (verificación adicional)</div>
+<div class="li-desc">Comparar alternativas consecutivas: ¿el ahorro en VP de costos (ΔVP) al pasar a la siguiente alternativa supera el incremento en inversión (ΔI₀)? Si ΔVP ≥ ΔI₀ → conviene subir. Si no → quedarse en la actual.</div></div></div>
+`},
+
+{type:'content',badge:'¿DE DÓNDE SALEN LOS NÚMEROS? — INVERSIÓN I₀',html:`
+<h2 class="section">💰 ¿Cómo se calcula la Inversión Inicial (I₀)?</h2>
+<p class="desc">La inversión inicial es todo el dinero que se necesita <strong style="color:var(--g)">antes de empezar a operar</strong>. Se paga una sola vez, al inicio del proyecto.</p>
+<div class="defcard">
+<div class="defcard-sym">I₀ = Inversión Inicial</div>
+<div class="defcard-name">Todo lo que se gasta ANTES de producir la primera unidad</div>
+<div class="defcard-def">Es la suma de todos los rubros necesarios para poner en marcha la planta. Se obtiene de cotizaciones, presupuestos de construcción y estudios técnicos.</div>
+</div>
+<table class="table-std" style="margin-top:10px">
+<thead><tr><th>Componente de I₀</th><th>Descripción</th><th>Ejemplo: Planta mermelada</th></tr></thead>
+<tbody>
+<tr><td>🏗️ Terreno</td><td>Compra o arriendo del lote donde irá la planta</td><td>$40.000.000</td></tr>
+<tr><td>🏭 Obra civil</td><td>Construcción del edificio, pisos, techos, bodegas</td><td>$80.000.000</td></tr>
+<tr><td>⚙️ Maquinaria y equipos</td><td>Compra de todas las máquinas (es el rubro más grande)</td><td>$150.000.000</td></tr>
+<tr><td>🔌 Instalaciones</td><td>Electricidad, plomería, gas, redes, aire comprimido</td><td>$25.000.000</td></tr>
+<tr><td>🚛 Transporte e instalación</td><td>Fletes, montaje y calibración de equipos</td><td>$12.000.000</td></tr>
+<tr><td>📋 Estudios previos</td><td>Diseño de planta, permisos, licencias, registros INVIMA</td><td>$8.000.000</td></tr>
+<tr><td>💵 Capital de trabajo</td><td>Dinero para operar los primeros 2-3 meses sin vender aún</td><td>$35.000.000</td></tr>
+<tr class="best"><td><strong>TOTAL I₀</strong></td><td><strong>Suma de todos los rubros anteriores</strong></td><td><strong>$350.000.000</strong></td></tr>
+</tbody>
+</table>
+<div class="highlight"><p class="desc" style="margin:0">💡 <strong>Dato clave:</strong> La inversión I₀ cambia según el nivel tecnológico. Una planta manual necesita menos obra civil, menos maquinaria y menos instalaciones que una automatizada.</p></div>
+`},
+{type:'content',badge:'¿DE DÓNDE SALEN LOS NÚMEROS? — COSTOS OPERATIVOS C',html:`
+<h2 class="section">📊 ¿Cómo se calcula el Costo de Operación Anual (C)?</h2>
+<p class="desc">Los costos operativos son los gastos <strong style="color:var(--w)">recurrentes cada año</strong> para mantener la planta en funcionamiento. Se repiten mientras dure el proyecto.</p>
+<div class="defcard">
+<div class="defcard-sym">C = Costo de Operación Anual</div>
+<div class="defcard-name">Todo lo que se gasta CADA AÑO para producir</div>
+<div class="defcard-def">Es la suma de todos los gastos anuales de producción: mano de obra, materiales, servicios, mantenimiento. Se estima a partir de presupuestos, cotizaciones y experiencia del sector.</div>
+</div>
+<table class="table-std" style="margin-top:10px">
+<thead><tr><th>Componente de C</th><th>Descripción</th><th>Ejemplo: Planta mermelada</th></tr></thead>
+<tbody>
+<tr><td>👷 Mano de obra directa</td><td>Salarios de operarios que producen (incluye prestaciones)</td><td>$36.000.000/año</td></tr>
+<tr><td>👔 Mano de obra indirecta</td><td>Supervisor, jefe de planta, vigilancia, aseo</td><td>$18.000.000/año</td></tr>
+<tr><td>🍓 Materia prima</td><td>Fruta, azúcar, pectina, ácido cítrico, preservantes</td><td>$48.000.000/año</td></tr>
+<tr><td>📦 Empaque y envases</td><td>Frascos de vidrio, tapas, etiquetas, cajas</td><td>$15.000.000/año</td></tr>
+<tr><td>⚡ Servicios públicos</td><td>Electricidad, agua, gas natural</td><td>$12.000.000/año</td></tr>
+<tr><td>🔧 Mantenimiento</td><td>Repuestos, lubricantes, reparaciones programadas</td><td>$8.000.000/año</td></tr>
+<tr><td>📋 Gastos administrativos</td><td>Contaduría, gerencia, papelería, seguros</td><td>$10.000.000/año</td></tr>
+<tr class="best"><td><strong>TOTAL C (anual)</strong></td><td><strong>Suma de todos los costos anuales</strong></td><td><strong>$147.000.000/año</strong></td></tr>
+</tbody>
+</table>
+<div class="highlight"><p class="desc" style="margin:0">💡 <strong>Relación clave:</strong> A <strong>mayor inversión</strong> (equipos modernos) → menor mano de obra → menor materia prima desperdiciada → menor costo energético → <strong>menor C</strong>. Eso es lo que aprovecha el método de Lange.</p></div>
+`},
+{type:'content',badge:'EL TRADE-OFF: I₀ VS C',html:`
+<h2 class="section">⚖️ ¿Por qué cambian I₀ y C según la alternativa?</h2>
+<p class="desc">Para la misma planta de mermeladas, cada nivel tecnológico tiene diferente distribución de costos. Veamos cómo se construyen las 4 alternativas del ejemplo de Lange:</p>
+<table class="table-std">
+<thead><tr><th>Rubro</th><th>A: Manual</th><th>B: Semiautomática</th><th>C: Automática</th><th>D: Alta tecnología</th></tr></thead>
+<tbody>
+<tr><td><strong>Maquinaria</strong></td><td>$30K (básica)</td><td>$120K (moderna)</td><td>$250K (robótica)</td><td>$400K (última generación)</td></tr>
+<tr><td><strong>Obra civil</strong></td><td>$40K (sencilla)</td><td>$60K (mejor)</td><td>$80K (amplia)</td><td>$90K (tecnificada)</td></tr>
+<tr><td><strong>Instalaciones</strong></td><td>$10K</td><td>$20K</td><td>$30K</td><td>$40K</td></tr>
+<tr><td><strong>Otros I₀</strong></td><td>$70K</td><td>$100K</td><td>$90K</td><td>$70K</td></tr>
+<tr class="best"><td><strong>Total I₀</strong></td><td><strong>$150K</strong></td><td><strong>$300K</strong></td><td><strong>$450K</strong></td><td><strong>$600K</strong></td></tr>
+<tr style="border-top:2px solid var(--b)"><td><strong>Operarios/año</strong></td><td>$60K (muchos)</td><td>$30K (menos)</td><td>$15K (pocos)</td><td>$8K (mínimos)</td></tr>
+<tr><td><strong>Energía + mant.</strong></td><td>$25K (alto)</td><td>$20K</td><td>$18K</td><td>$15K</td></tr>
+<tr><td><strong>Materia prima</strong></td><td>$35K (desperdicio)</td><td>$28K</td><td>$18K</td><td>$10K (eficiente)</td></tr>
+<tr><td><strong>Otros C</strong></td><td>$10K</td><td>$7K</td><td>$4K</td><td>$2K</td></tr>
+<tr class="best"><td><strong>Total C/año</strong></td><td><strong>$130K</strong></td><td><strong>$85K</strong></td><td><strong>$55K</strong></td><td><strong>$35K</strong></td></tr>
+</tbody>
+</table>
+<div class="highlight"><p class="desc" style="margin:0">⚖️ Observa el patrón: cuando <strong>I₀ sube</strong> de $150K a $600K, <strong>C baja</strong> de $130K a $35K por año. ¿Pero cuál combinación es más barata EN TOTAL? Para eso necesitamos el método de Lange.</p></div>
+`},
+{type:'content',badge:'RESUMEN: ORIGEN DE LOS DATOS',html:`
+<h2 class="section">📋 ¿De dónde obtengo los datos para Lange?</h2>
+<p class="desc">Para cada alternativa necesitas <strong>dos números</strong>: I₀ y C. Aquí está la fuente de cada uno:</p>
+<div class="grid2">
+<div class="gcard" style="border-top:3px solid var(--a)">
+<div class="icon">💰</div><div class="title">Para calcular I₀ (Inversión)</div>
+<div class="text">
+📌 <strong>Cotizaciones del mercado:</strong> Pedir precios reales a fabricantes de maquinaria<br>
+📌 <strong>Presupuestos de construcción:</strong> Un ingeniero civil estima la obra<br>
+📌 <strong>Catálogos técnicos:</strong> Fichas de equipos con precios FOB y CIF<br>
+📌 <strong>Proyectos similares:</strong> Consultar cuánto costaron plantas parecidas<br>
+📌 <strong>Estudios de prefactibilidad:</strong> SENA, INNpulsa, cámaras de comercio</div></div>
+<div class="gcard" style="border-top:3px solid var(--g)">
+<div class="icon">📊</div><div class="title">Para calcular C (Costos anuales)</div>
+<div class="text">
+📌 <strong>Nómina:</strong> Salario mínimo × trabajadores × 1.5 (factor prestacional)<br>
+📌 <strong>Cotización de insumos:</strong> Precios de materia prima por kg × cantidad<br>
+📌 <strong>Facturas de servicios:</strong> Consumo eléctrico estimado × tarifa<br>
+📌 <strong>Mantenimiento:</strong> Generalmente 3-5% del valor de la maquinaria por año<br>
+📌 <strong>Benchmarking:</strong> Empresas del mismo sector comparten datos</div></div>
+</div>
+<div class="highlight"><p class="desc" style="margin:0">🎯 <strong>Ahora sí estamos listos:</strong> Ya sabemos de dónde salen I₀ y C para cada alternativa. Ahora apliquemos el método de Lange con estos datos para encontrar la alternativa óptima.</p></div>
+`},
+{type:'content',badge:'LANGE — EJEMPLO RESUELTO PASO A PASO',html:`
+<h2 class="section">🔢 Ejemplo: Planta de Mermeladas</h2>
+<p class="desc">Una empresa evalúa 4 alternativas para su planta. Datos: <span class="tag tag-w">i = 12% anual</span> <span class="tag tag-w">n = 7 años</span></p>
+<div class="step-box" style="margin-bottom:12px">
+<div class="step-n">Paso 2 — Calcular el Factor de Anualidad (FA)</div>
+<div class="step-c">
+FA = [1 − (1 + 0.12)⁻⁷] / 0.12<br>
+FA = [1 − (1.12)⁻⁷] / 0.12<br>
+FA = [1 − 0.4523] / 0.12<br>
+FA = 0.5477 / 0.12<br>
+<strong style="color:var(--ok)">FA = 4.5638</strong><br><br>
+<em style="color:var(--m)">Interpretación: $1 pagado anualmente durante 7 años al 12% equivale a tener $4.5638 hoy de una sola vez.</em>
+</div></div>
+<div class="step-box"><div class="step-n">Pasos 3, 4, 5 — VP(C), CT y decisión</div>
+<div class="step-c">VP(C) = Costo anual × 4.5638 &nbsp;|&nbsp; CT = Inversión + VP(C)</div></div>
+<table class="table-std">
+<thead><tr>
+<th>#</th><th>Alternativa</th><th>I₀ (hoy)</th><th>C (c/año)</th><th>VP(C)=C×4.5638</th><th>CT=I₀+VP(C)</th><th>¿Óptima?</th>
+</tr></thead>
+<tbody>
+<tr><td>A</td><td>Manual</td><td>$150.000</td><td>$130.000</td><td>$593.294</td><td>$743.294</td><td><span class="tag tag-no">No</span></td></tr>
+<tr class="best"><td>B</td><td>⭐ Semiautomática</td><td>$300.000</td><td>$85.000</td><td>$387.923</td><td>$687.923</td><td><span class="tag tag-ok">ÓPTIMA</span></td></tr>
+<tr><td>C</td><td>Automática</td><td>$450.000</td><td>$55.000</td><td>$251.009</td><td>$701.009</td><td><span class="tag tag-no">No</span></td></tr>
+<tr><td>D</td><td>Alta tecnología</td><td>$600.000</td><td>$35.000</td><td>$159.733</td><td>$759.733</td><td><span class="tag tag-no">No</span></td></tr>
+</tbody>
+</table>
+<div class="highlight"><p class="desc" style="margin:0">✅ <strong>La Semiautomática (B)</strong> tiene el menor CT = <strong>$687.923</strong>. Aunque D tiene costos operativos muy bajos ($35K/año), su inversión inicial es tan alta ($600K) que su CT total es el segundo mayor.</p></div>
+`},
+{type:'content',badge:'LANGE — ANÁLISIS MARGINAL',html:`
+<h2 class="section">📊 Análisis Marginal: ¿Vale la pena pagar más?</h2>
+<p class="desc">El análisis marginal complementa la decisión de Lange respondiendo: <strong style="color:var(--g)">¿El ahorro en costos operativos justifica la inversión adicional?</strong></p>
+<div class="defcard">
+<div class="defcard-sym">ΔI₀ y ΔVP(ahorro)</div>
+<div class="defcard-name">Los dos cambios al pasar de una alternativa a la siguiente</div>
+<div class="defcard-def">
+<strong style="color:var(--no)">ΔI₀</strong> = Incremento en inversión inicial (cuánto más tengo que pagar hoy)<br>
+<strong style="color:var(--ok)">ΔVP(ahorro)</strong> = Cuánto menos pagaré en costos operativos (en VP): VP(alternativa anterior) − VP(alternativa nueva)<br><br>
+<strong>Regla:</strong> Si <span class="tag tag-ok">ΔVP(ahorro) ≥ ΔI₀</span> → El ahorro compensa el gasto → SÍ conviene pasar<br>
+Si <span class="tag tag-no">ΔVP(ahorro) &lt; ΔI₀</span> → El ahorro no compensa → NO conviene pasar
+</div>
+</div>
+<table class="table-std" style="margin-top:12px">
+<thead><tr><th>Transición</th><th>ΔI₀</th><th>ΔVP ahorro</th><th>¿ΔVP ≥ ΔI₀?</th><th>Decisión</th></tr></thead>
+<tbody>
+<tr class="best"><td>A → B</td><td>+$150.000</td><td>$593.294−$387.923 = $205.371</td><td>$205K > $150K ✅</td><td><span class="tag tag-ok">SÍ conviene</span></td></tr>
+<tr><td>B → C</td><td>+$150.000</td><td>$387.923−$251.009 = $136.914</td><td>$137K &lt; $150K ❌</td><td><span class="tag tag-no">NO conviene</span></td></tr>
+<tr><td>C → D</td><td>+$150.000</td><td>$251.009−$159.733 = $91.276</td><td>$91K &lt; $150K ❌</td><td><span class="tag tag-no">NO conviene</span></td></tr>
+</tbody>
+</table>
+<div class="highlight"><p class="desc" style="margin:0">💡 El análisis confirma: conviene pasar de A a B (el ahorro de $205K supera el costo extra de $150K), pero <strong>NO conviene</strong> pasar de B a C porque ahorra solo $137K pero se invierte $150K más. Se queda en <strong>B = Óptima</strong>.</p></div>
+`},
+{type:'quiz',badge:'🎮 QUIZ — MÉTODO DE LANGE',title:'¿Aplicarías bien el Método de Lange?',questions:[
+{q:'¿Qué mide el "Costo Total (CT)" en el análisis de Lange?',o:['Solo el precio de compra de la maquinaria','El costo de producir una unidad del producto','La inversión inicial más el VP de todos los costos operativos del proyecto','El precio de venta multiplicado por las unidades producidas'],c:2,f:'CT = I₀ + VP(C). Combina lo que pagas hoy (inversión I₀) con lo que pagarás en operación durante la vida del proyecto, traído a valor presente con el FA.'},
+{q:'Una empresa tiene i=10% y n=5 años. ¿Cuál es el FA correctamente calculado?',o:['FA = 10% × 5 = 0.5','FA = [1−(1.10)⁻⁵]/0.10 = 3.7908','FA = 5/0.10 = 50','FA = 1/(1.10)⁵ = 0.6209'],c:1,f:'FA(10%,5) = [1−(1.10)⁻⁵]/0.10 = [1−0.6209]/0.10 = 0.3791/0.10 = 3.7908. Es el factor correcto que multiplica el costo anual para obtener su VP.'},
+{q:'Si la Alt. A tiene VP(C)=$500K y la Alt. B tiene VP(C)=$380K, ¿cuánto "ahorra" B en costos vs A?',o:['$880.000','$120.000 de ahorro en valor presente','$380.000','No se puede calcular sin la inversión'],c:1,f:'El ahorro en VP = VP(A) − VP(B) = $500K − $380K = $120K. Eso es lo que B ahorrará en costos operativos respecto a A, expresado en pesos de hoy.'},
+{q:'Análisis marginal: ΔI₀ = +$200K y ΔVP(ahorro) = $180K. ¿Qué decides?',o:['Invertir en la alternativa más cara porque ahorra mucho','No conviene: pagas $200K extra pero solo ahorras $180K → CT sube en $20K','Sí conviene porque $180K es casi igual a $200K','No hay suficiente información para decidir'],c:1,f:'$180K < $200K → el ahorro NO supera la inversión adicional. Si subes a la siguiente alternativa, tu CT aumenta en $20K en lugar de bajar. Por tanto, NO conviene el cambio.'},
+{q:'En el ejemplo de mermeladas con FA=4.5638, ¿cuánto es el VP(C) de la alternativa Automática (C=$55.000)?',o:['$55.000','$251.009','$450.000','$701.009'],c:1,f:'VP(C) = $55.000 × 4.5638 = $251.009. Esto significa que pagar $55.000 anuales durante 7 años al 12% equivale hoy a un solo pago de $251.009.'}
+]},
+{type:'content',badge:'CONCEPTOS DE ESCALACIÓN',html:`
+<h2 class="section">📚 Conceptos Clave del Método de Escalación</h2>
+<div class="defcard">
+<div class="defcard-sym">% Utilización (Uso)</div>
+<div class="defcard-name">¿Qué tan ocupado está un equipo respecto a su capacidad máxima?</div>
+<div class="defcard-def">
+Es el porcentaje del tiempo que el equipo está efectivamente produciendo respecto a las horas disponibles del turno.<br><br>
+<strong style="color:var(--a2)">Fórmula:</strong> % Uso = (Meta/día ÷ Capacidad_total/hora) ÷ Horas_turno × 100<br>
+O equivalente: % Uso = Horas_necesarias / Horas_disponibles × 100
+</div>
+<div class="defcard-ex">Ejemplo: Meta=8.000 u/día | Equipo: 1.000 u/hora | Turno: 8 horas<br>
+Horas necesarias = 8.000÷1.000 = 8 horas | % Uso = 8/8 × 100 = 100% → ¡Al límite! Peligroso.</div>
+</div>
+<div class="defcard">
+<div class="defcard-sym">🔴 Cuello de Botella</div>
+<div class="defcard-name">El equipo más lento que limita toda la línea</div>
+<div class="defcard-def">En una línea de producción, la velocidad máxima de TODO el proceso está determinada por el equipo más lento. Sin importar qué tan rápidos sean los demás equipos, la producción no puede superar al cuello de botella. Es el equipo con <strong>mayor % de utilización</strong>.</div>
+<div class="defcard-ex">Analógico: Si en una autopista hay un carril de 2 carriles que se reduce a 1, el flujo de TODOS los autos queda limitado ese punto estrecho. Ese es el cuello de botella.</div>
+</div>
+<div class="defcard">
+<div class="defcard-sym">⚖️ Balanceo de Línea</div>
+<div class="defcard-name">Lograr que todos los equipos trabajen en zona óptima</div>
+<div class="defcard-def">Proceso de ajustar cantidades o capacidades de equipos para que ninguno sea cuello de botella permanente ni esté demasiado ocioso. La zona óptima de operación es entre <strong style="color:var(--ok)">40% y 80%</strong> de uso.</div>
+<div class="defcard-ex">
+<span class="tag tag-ok">40%-80%</span> Zona óptima: buena productividad con margen para variaciones &nbsp;
+<span class="tag tag-no">&gt;80%</span> Riesgo: cualquier falla colapsa la producción &nbsp;
+<span class="tag tag-w">&lt;40%</span> Ociosa: inversión subutilizada</div>
+</div>
+`},
+{type:'content',badge:'ESCALACIÓN — CONCEPTO Y FUNDAMENTO',html:`
+<h2 class="section">📏 Método de Escalación — ¿En qué se basa?</h2>
+<p class="desc">A diferencia de Lange (que parte de flujos de caja), la Escalación parte de los <strong style="color:var(--g)">equipos reales disponibles en el mercado</strong> y calcula qué producción se puede lograr con diferentes combinaciones de turnos.</p>
+<div class="defcard">
+<div class="defcard-sym">Turno = unidad de tiempo de operación</div>
+<div class="defcard-name">¿Qué es un turno de trabajo?</div>
+<div class="defcard-def">Es el período continuo en que opera la planta. Normalmente 8 horas. Una planta puede operar en <strong>1, 2 o 3 turnos/día</strong>:<br>
+• <strong>1 turno:</strong> 8 horas/día (ej: 7am-3pm)<br>
+• <strong>2 turnos:</strong> 16 horas/día (ej: 7am-3pm y 3pm-11pm)<br>
+• <strong>3 turnos:</strong> 24 horas/día (planta continua)<br><br>
+Agregar un turno es la manera más económica de escalar la producción: usa los mismos equipos, sin nueva inversión.</div>
+<div class="defcard-ex">Si 1 turno produce 10.000 u/día → 2 turnos = 20.000 u/día (usando los mismos equipos)</div>
+</div>
+<div class="defcard">
+<div class="defcard-sym">Escalación progresiva</div>
+<div class="defcard-name">Crecer la producción sin grandes inversiones adicionales</div>
+<div class="defcard-def">El método propone una ruta de crecimiento ordenada antes de comprar más equipos:<br>
+1️⃣ <strong>Horas extra:</strong> Alargar el turno de 8h a 9-10h (+12-25% producción)<br>
+2️⃣ <strong>Día adicional:</strong> Pasar de 5 a 6 días laborables (+20%)<br>
+3️⃣ <strong>Segundo turno:</strong> Duplicar la producción (×2)<br>
+4️⃣ <strong>Maquila:</strong> Subcontratar producción adicional a terceros<br>
+5️⃣ <strong>Nueva inversión:</strong> Ampliar o reemplazar equipos (costoso, último recurso)</div>
+</div>
+`},
+{type:'content',badge:'ESCALACIÓN — PROCEDIMIENTO PASO A PASO',html:`
+<h2 class="section">📋 Procedimiento: Método de Escalación</h2>
+<div class="list-item" style="animation-delay:.1s"><div class="li-num">1</div><div class="li-content">
+<div class="li-title">Definir la producción meta diaria</div>
+<div class="li-desc">¿Cuántas unidades por día necesito producir? Este dato sale de la demanda insatisfecha del estudio de mercado, dividida por los días de trabajo al año.</div></div></div>
+<div class="list-item" style="animation-delay:.2s"><div class="li-num">2</div><div class="li-content">
+<div class="li-title">Listar todos los equipos de la línea con sus capacidades</div>
+<div class="li-desc">Para cada equipo: nombre, capacidad (unidades/hora) y cantidad. Este dato proviene de cotizaciones y fichas técnicas de los fabricantes.</div></div></div>
+<div class="list-item" style="animation-delay:.3s"><div class="li-num">3</div><div class="li-content">
+<div class="li-title">Calcular el % de uso de cada equipo</div>
+<div class="li-desc">% Uso = (Meta/día ÷ Capacidad_total/hora) ÷ Horas_turno × 100<br>El equipo con mayor % es el cuello de botella.</div></div></div>
+<div class="list-item" style="animation-delay:.4s"><div class="li-num">4</div><div class="li-content">
+<div class="li-title">Evaluar si 1 turno es suficiente</div>
+<div class="li-desc">Si algún equipo supera el 80%, hay cuello de botella. Opciones: agregar más unidades de ese equipo, usar 2 turnos, o reducir la meta.</div></div></div>
+<div class="list-item" style="animation-delay:.5s"><div class="li-num">5</div><div class="li-content">
+<div class="li-title">Proponer la combinación óptima y el plan de escalación</div>
+<div class="li-desc">Ajustar cantidades de equipos hasta que todos queden entre 40%-80% de uso. Proponer cómo escalar si la demanda crece: primero horas extra, luego turnos adicionales, finalmente nueva inversión.</div></div></div>
+<div class="highlight"><p class="desc" style="margin:0">📊 Regla del balanceo: <span class="tag tag-ok">40%-80%</span> = ÓPTIMO | <span class="tag tag-no">&gt;80%</span> = CUELLO DE BOTELLA | <span class="tag tag-w">&lt;40%</span> = MUY OCIOSO</p></div>
+`},
+{type:'content',badge:'ESCALACIÓN — EJEMPLO RESUELTO',html:`
+<h2 class="section">🔢 Ejemplo: Planta de Mermeladas — Escalación</h2>
+<p class="desc">Meta: <span class="tag tag-w">12.000 frascos/día</span> | Turno: <span class="tag tag-w">8 horas</span> | Máximo uso admisible: <span class="tag tag-ok">80%</span></p>
+<div class="step-box" style="margin-bottom:10px">
+<div class="step-n">Cálculo de % Uso — Fórmula aplicada</div>
+<div class="step-c">% Uso = (Meta/día ÷ Cap_total/hora) ÷ Horas_turno × 100<br>
+<strong>Ejemplo Marmita:</strong> Cap.total = 350 u/h × 2 = 700 u/h<br>
+Horas necesarias = 12.000 ÷ 700 = 17.14 horas<br>
+% Uso = 17.14 ÷ 8 × 100 = <strong style="color:var(--no)">214%</strong> → Imposible en 1 turno de 8h</div>
+</div>
+<table class="table-std">
+<thead><tr><th>Equipo</th><th>Cap./h</th><th>Cant.</th><th>Total/h</th><th>Horas neces.</th><th>% Uso</th><th>Estado</th></tr></thead>
+<tbody>
+<tr><td>Marmita de escalde</td><td>350</td><td>2</td><td>700</td><td>17.1 h</td><td style="color:var(--no);font-weight:700">214%</td><td>🔴 CUELLO</td></tr>
+<tr><td>Tanque de mezcla</td><td>300</td><td>3</td><td>900</td><td>13.3 h</td><td style="color:var(--no);font-weight:700">167%</td><td>🔴 CUELLO</td></tr>
+<tr><td>Envasadora</td><td>2.000</td><td>1</td><td>2.000</td><td>6.0 h</td><td style="color:var(--ok);font-weight:700">75%</td><td>✅ Óptimo</td></tr>
+<tr><td>Esterilizadora</td><td>1.000</td><td>4</td><td>4.000</td><td>3.0 h</td><td style="color:var(--w);font-weight:700">38%</td><td>⚠ Subutilizada</td></tr>
+<tr><td>Etiquetadora</td><td>4.500</td><td>1</td><td>4.500</td><td>2.7 h</td><td style="color:var(--w);font-weight:700">33%</td><td>⚠ Muy ociosa</td></tr>
+</tbody>
+</table>
+<div class="highlight"><p class="desc" style="margin:0">❌ <strong>Problema:</strong> Las marmitas necesitan 17 horas pero solo hay 8 disponibles. <strong>Solución:</strong> Agregar más marmitas (de 2 a 5) y más tanques (de 3 a 6) para bajar el % de uso a zona óptima. Ver siguiente slide.</p></div>
+`},
+{type:'content',badge:'ESCALACIÓN — SOLUCIÓN Y BALANCEO',html:`
+<h2 class="section">✅ Solución: Balanceo de la Línea</h2>
+<p class="desc">Se ajusta la cantidad de equipos "lentos" hasta que todos queden en la zona óptima (40%-80% de uso).</p>
+<table class="table-std">
+<thead><tr><th>Equipo</th><th>Cap./h</th><th>Cant. NUEVA</th><th>Total/h</th><th>% Uso</th><th>¿OK?</th></tr></thead>
+<tbody>
+<tr class="best"><td>Marmita</td><td>350</td><td><strong>5</strong> (antes 2)</td><td>1.750</td><td>71%</td><td><span class="tag tag-ok">✅ 70-80%</span></td></tr>
+<tr class="best"><td>Tanque mezcla</td><td>300</td><td><strong>6</strong> (antes 3)</td><td>1.800</td><td>69%</td><td><span class="tag tag-ok">✅ 60-70%</span></td></tr>
+<tr><td>Envasadora</td><td>2.000</td><td>1 (sin cambio)</td><td>2.000</td><td>75%</td><td><span class="tag tag-ok">✅ Óptimo</span></td></tr>
+<tr><td>Esterilizadora</td><td>1.000</td><td><strong>2</strong> (antes 4)</td><td>2.000</td><td>75%</td><td><span class="tag tag-ok">✅ Óptimo</span></td></tr>
+<tr><td>Etiquetadora</td><td>4.500</td><td>1 (sin cambio)</td><td>4.500</td><td>33%</td><td><span class="tag tag-w">⚠ Ociosa</span></td></tr>
+</tbody>
+</table>
+<div class="step-box" style="margin-top:12px">
+<div class="step-n">Plan de Escalación Progresiva</div>
+<div class="step-c">
+📅 <strong>Hoy (1 turno):</strong> 12.000 frascos/día × 6 días × 52 sem = <strong>3.744.000 frascos/año</strong><br>
+📅 <strong>Si demanda crece → Horas extra:</strong> 8h→10h (+25%) = 15.000 frascos/día<br>
+📅 <strong>Si sigue creciendo → 2 turnos:</strong> 24.000 frascos/día (×2, sin comprar equipos)<br>
+📅 <strong>Largo plazo → Nueva inversión:</strong> si la demanda supera la capacidad de 3 turnos</div>
+</div>
+`},
+{type:'tf',badge:'🎮 V/F — MÉTODO DE ESCALACIÓN',title:'Verdadero o Falso: Escalación',statements:[
+{s:'El cuello de botella de una línea es el equipo con MENOR porcentaje de utilización.',a:false,f:'FALSO. El cuello de botella es el equipo con MAYOR % de utilización: es el que necesita más horas de las disponibles o está más cerca del límite. Ese equipo limita la producción de toda la línea.'},
+{s:'Un equipo con 75% de utilización está dentro de la zona óptima de operación.',a:true,f:'VERDADERO. La zona óptima es 40%-80%. Al 75% hay alta productividad y todavía queda margen del 5% para variaciones en la demanda sin colapsar la producción.'},
+{s:'Si una planta tiene 1 turno de 8h, la forma más ECONÓMICA de aumentar producción es comprar más equipos.',a:false,f:'FALSO. La forma más económica es primero agregar horas extra al turno, luego trabajar un día más por semana, y finalmente un 2do turno. Comprar más equipos implica nueva inversión y se hace solo si los turnos no son suficientes.'},
+{s:'El método de escalación permite planificar el crecimiento de la planta según crece la demanda.',a:true,f:'VERDADERO. Esa es su mayor virtud: define un plan de crecimiento gradual (horas extra → día adicional → 2do turno → nueva inversión) sin necesidad de sobredimensionar desde el inicio.'},
+{s:'En la planta de mermeladas, la etiquetadora (33% uso) era el mayor problema de la línea.',a:false,f:'FALSO. La etiquetadora al 33% está subutilizada (baja eficiencia, pero no bloquea la producción). El verdadero problema eran las marmitas al 214% y los tanques al 167%, que hacían físicamente imposible cumplir la meta con 1 turno.'},
+{s:'Si aumento el número de turnos de 1 a 2, la producción anual se duplica usando los mismos equipos.',a:true,f:'VERDADERO (aproximadamente). Con 2 turnos se tienen 16h efectivas vs 8h, por lo que la producción diaria se duplica. La producción anual también se duplica, todo con los mismos equipos e infraestructura.'}
+]},
+{type:'match',badge:'🎮 RELACIONAR — DOS MÉTODOS',title:'¿A qué método pertenece cada concepto?',pairs:[
+{left:'CT = I₀ + VP(C) → MÍNIMO',right:'Lange',emoji:'📐'},
+{left:'% Uso = Hs.necesarias / Hs.disponibles',right:'Escalación',emoji:'📏'},
+{left:'Factor de Anualidad FA = [1−(1+i)⁻ⁿ]/i',right:'Lange',emoji:'📐'},
+{left:'Cuello de botella = equipo con mayor % uso',right:'Escalación',emoji:'📏'},
+{left:'Análisis marginal: ΔVP(ahorro) vs ΔI₀',right:'Lange',emoji:'📐'},
+{left:'1 turno → 2 turnos → nueva inversión',right:'Escalación',emoji:'📏'},
+{left:'Tasa de descuento i y horizonte n',right:'Lange',emoji:'📐'}
+]},
+
+{type:'content',badge:'🏭 CASO PROPUESTO 1 — LANGE',html:`
+<h2 class="section">👥 Caso 1: Empresa de Prendas de Vestir</h2>
+<p class="desc">En grupos de 3-4 personas, apliquen el <strong style="color:var(--a2)">Método de Lange</strong>. Tiempo: <strong style="color:var(--w)">20 minutos</strong>.</p>
+<div class="highlight">
+<p class="desc" style="margin:0"><strong>Contexto:</strong> Una cooperativa de costureras del barrio Campestre quiere instalar una planta de confección en Barrancabermeja. El estudio de mercado indica que hay demanda insatisfecha suficiente para cualquier tamaño. Se evalúan 4 alternativas. <strong>Datos:</strong> Tasa de descuento i = <strong>10% anual</strong> | Horizonte n = <strong>8 años</strong>.</p>
+</div>
+<table class="table-std">
+<thead><tr><th>#</th><th>Alternativa</th><th>Inversión Inicial I₀</th><th>Costo de Operación Anual C</th></tr></thead>
+<tbody>
+<tr><td>A</td><td>Taller artesanal (máquinas básicas)</td><td>$80.000.000</td><td>$95.000.000/año</td></tr>
+<tr><td>B</td><td>Taller semiindustrializado</td><td>$180.000.000</td><td>$60.000.000/año</td></tr>
+<tr><td>C</td><td>Planta industrial estándar</td><td>$320.000.000</td><td>$38.000.000/año</td></tr>
+<tr><td>D</td><td>Planta industrial automatizada</td><td>$480.000.000</td><td>$22.000.000/año</td></tr>
+</tbody>
+</table>
+<div class="step-box" style="margin-top:12px">
+<div class="step-n">Instrucciones de trabajo</div>
+<div class="step-c">
+1️⃣ Calculen el FA: FA = [1 − (1 + 0.10)⁻⁸] / 0.10 &nbsp;→&nbsp; <strong style="color:var(--ok)">PISTA: FA = 5.3349</strong><br>
+2️⃣ Calculen VP(C) = C × 5.3349 para cada alternativa<br>
+3️⃣ Calculen CT = I₀ + VP(C) para cada alternativa<br>
+4️⃣ ¿Cuál alternativa tiene el menor CT? → Esa es la ÓPTIMA<br>
+5️⃣ Análisis marginal: ¿Conviene pasar A→B? ¿B→C? ¿C→D?</div>
+</div>
+`},
+{type:'content',badge:'🏭 CASO PROPUESTO 2 — ESCALACIÓN',html:`
+<h2 class="section">👥 Caso 2: Fábrica de Ladrillos</h2>
+<p class="desc">Mismo grupo, ahora apliquen el <strong style="color:var(--g)">Método de Escalación</strong>. Tiempo: <strong style="color:var(--w)">20 minutos</strong>.</p>
+<div class="highlight">
+<p class="desc" style="margin:0"><strong>Contexto:</strong> Una empresa quiere instalar una ladrillera en Puerto Wilches. La meta de producción es <strong>8.000 ladrillos/día</strong> con un turno de <strong>8 horas efectivas</strong>, 6 días/semana, 52 semanas/año. El uso máximo admisible es del <strong>75%</strong>.</p>
+</div>
+<table class="table-std">
+<thead><tr><th>Equipo en la línea</th><th>Capacidad (ladrillos/hora)</th><th>Cantidad instalada</th></tr></thead>
+<tbody>
+<tr><td>Mezcladora de arcilla</td><td>800</td><td>1</td></tr>
+<tr><td>Extrusora / Moldeadora</td><td>1.200</td><td>1</td></tr>
+<tr><td>Cortadora automática</td><td>2.400</td><td>1</td></tr>
+<tr><td>Horno continuo de quema</td><td>600</td><td>2</td></tr>
+<tr><td>Clasificadora y paletizadora</td><td>3.000</td><td>1</td></tr>
+</tbody>
+</table>
+<div class="step-box" style="margin-top:12px">
+<div class="step-n">Instrucciones de trabajo</div>
+<div class="step-c">
+1️⃣ Para cada equipo: % Uso = (8.000 ÷ Cap_total/h) ÷ 8h × 100<br>
+2️⃣ Identifiquen el cuello de botella (mayor % uso)<br>
+3️⃣ ¿Puede cumplirse la meta con 1 turno? (¿algún equipo supera el 75%?)<br>
+4️⃣ Propongan nueva cantidad de equipos para balancear la línea (zona 40%-75%)<br>
+5️⃣ Calculen la producción anual con la configuración optimizada</div>
+</div>
+`},
+{type:'quiz',badge:'🎮 VERIFICACIÓN — CASO 1 CONFECCIÓN (LANGE)',title:'Revisión: ¿Resolvieron bien el Caso 1?',context:'<strong>FA(10%, 8 años) = 5.3349</strong> | A: I₀=80M, C=95M | B: I₀=180M, C=60M | C: I₀=320M, C=38M | D: I₀=480M, C=22M',questions:[
+{q:'¿Cuánto es el VP(C) de la Alternativa A (C=$95.000.000)?',o:['$475.000.000','$506.815.500','$95.000.000','$586.815.500'],c:1,f:'VP(A) = $95.000.000 × 5.3349 = $506.815.500. Esto significa que pagar $95M cada año durante 8 años al 10% equivale en pesos de hoy a $506.8M.'},
+{q:'¿Cuánto es el CT de la Alternativa B (I₀=$180M, C=$60M)?',o:['$240.000.000','$500.094.000','$320.094.000','$480.094.000'],c:1,f:'VP(B) = $60M × 5.3349 = $320.094.000. CT(B) = $180M + $320.094M = $500.094.000.'},
+{q:'¿Cuál de las 4 alternativas tiene el menor Costo Total (CT)?',o:['Alternativa A — Taller artesanal','Alternativa B — Semiindustrial','Alternativa C — Industrial estándar','Alternativa D — Automatizada'],c:1,f:'CT(A)=$586.8M, CT(B)=$500.1M, CT(C)=$522.7M, CT(D)=$597.3M → La MENOR es B con $500.1M. La semiindustrializada es la óptima.'},
+{q:'Análisis marginal A→B: ΔI₀=+$100M. El ΔVP(ahorro)=$186.7M. ¿Conviene el cambio?',o:['No, porque $186.7M no es suficiente','Sí, porque el ahorro ($186.7M) supera la inversión adicional ($100M)','Solo conviene si la demanda es muy alta','No hay información suficiente'],c:1,f:'$186.7M > $100M → SÍ conviene. Al cambiar de A a B se paga $100M más hoy, pero se ahorra $186.7M en VP de costos operativos → el CT baja en $86.7M.'},
+{q:'Análisis marginal B→C: ΔI₀=+$140M. ΔVP(ahorro)=$117.4M. ¿Conviene?',o:['Sí, porque $117M es casi igual a $140M','No, porque se pagan $140M más pero solo se ahorran $117.4M → CT sube $22.6M','Sí, siempre conviene la planta más grande','No se puede saber sin la TIR'],c:1,f:'$117.4M < $140M → NO conviene. El cambio de B a C aumentaría el CT en $22.6M en lugar de reducirlo. Por eso B es la óptima confirmada.'}
+]},
+{type:'quiz',badge:'🎮 VERIFICACIÓN — CASO 2 LADRILLOS (ESCALACIÓN)',title:'Revisión: ¿Resolvieron bien el Caso 2?',questions:[
+{q:'Mezcladora (cap=800 u/h, cant=1). ¿Cuál es su % de uso con meta=8.000/día y turno=8h?',o:['80%','62.5%','125%','100%'],c:2,f:'% Uso = (8.000 ÷ 800) ÷ 8 × 100 = 10h ÷ 8h × 100 = 125%. Necesita 10 horas pero solo hay 8 disponibles. Es el principal cuello de botella.'},
+{q:'Los 2 hornos tienen cap.total = 600×2=1.200 u/h. ¿Cuál es su % de uso?',o:['75%','83.3%','50%','100%'],c:1,f:'% Uso = (8.000 ÷ 1.200) ÷ 8 × 100 = 6.67h ÷ 8h × 100 = 83.3%. Supera el 75% admisible. Son el segundo cuello de botella.'},
+{q:'¿Cuántos hornos adicionales se necesitan para bajar el uso AL O POR DEBAJO del 75%?',o:['0 (con 2 hornos es suficiente)','1 horno más (total 3): 8.000÷1.800÷8×100=55.6% ✅','2 hornos más (total 4)','Los hornos no son el problema'],c:1,f:'Con 3 hornos: cap.total=600×3=1.800 u/h. % Uso=(8.000÷1.800)÷8×100=55.6% ✅ Dentro del 40-75%. Un horno adicional es suficiente.'},
+{q:'Con la línea balanceada (2 mezcladoras + 3 hornos), ¿cuánto produce en 1 año? (meta=8.000/día, 6días/sem, 52sem)',o:['3.744.000 ladrillos/año','2.496.000 ladrillos/año','4.160.000 ladrillos/año','8.000 ladrillos/año'],c:1,f:'Producción anual = 8.000 u/día × 6 días/semana × 52 semanas = 2.496.000 ladrillos/año.'},
+{q:'Si la demanda crece al año 3 y necesitan 14.000 ladrillos/día, ¿cuál sería el PRIMER paso de escalación antes de comprar más equipos?',o:['Comprar una nueva mezcladora inmediatamente','Aumento de horas extra (pasar de 8h a 10h/turno → 14.000/1.000×10=... verificar)','Agregar un segundo turno completo','Construir una nueva planta'],c:1,f:'El primer paso de escalación siempre es horas extra: alargar el turno de 8 a 10 horas (+25% de producción: 8.000×1.25=10.000/día). Si no alcanza, el segundo paso es un día adicional por semana. El 2do turno viene después.'}
+]},
+{type:'content',badge:'📋 RESUMEN FINAL — SESIÓN 2',html:`
+<h2 class="section">📋 Lo que aprendimos hoy</h2>
+<div class="grid2">
+<div class="gcard" style="border-top:3px solid var(--a)">
+<div class="icon">📐</div><div class="title">Método de Lange</div>
+<div class="text">
+<strong style="color:var(--a2)">¿Qué es?</strong> Herramienta para elegir entre alternativas de inversión basándose en el Costo Total.<br><br>
+<strong style="color:var(--g)">Fórmulas:</strong><br>
+FA = [1−(1+i)⁻ⁿ]/i<br>
+VP(C) = Costo anual × FA<br>
+CT = I₀ + VP(C) → elegir MÍNIMO<br><br>
+<strong style="color:var(--w)">Concepto clave:</strong> Mayor inversión no siempre = menor CT. El óptimo equilibra inversión y costos operativos.</div></div>
+<div class="gcard" style="border-top:3px solid var(--g)">
+<div class="icon">📏</div><div class="title">Método de Escalación</div>
+<div class="text">
+<strong style="color:var(--g)">¿Qué es?</strong> Herramienta para dimensionar la planta según equipos reales y planificar el crecimiento.<br><br>
+<strong style="color:var(--a2)">Fórmulas:</strong><br>
+% Uso = (Meta/Cap_total) ÷ Horas × 100<br>
+Zona óptima = 40%-80% de uso<br>
+Cuello = equipo con mayor % uso<br><br>
+<strong style="color:var(--ok)">Concepto clave:</strong> Antes de comprar más equipos, escalar con horas extra y turnos adicionales.</div></div>
+</div>
+<div class="highlight" style="margin-top:12px;text-align:center">
+<p class="desc" style="margin:0">📅 <strong>Próxima sesión:</strong> Localización del proyecto — Método Cualitativo por Puntos<br>
+📚 <strong>Lectura:</strong> Baca Urbina Cap. 3, Págs. 88-105 — Localización óptima del proyecto</p></div>
+`},
+{type:'results'}
+];
+
+let S={slide:0,name:'',score:0,total:0,answers:[],quizState:null,matchState:null,tfState:null};
+function render(){
+  const app=document.getElementById('app');
+  const sl=SLIDES[S.slide];
+  const progress=Math.round((S.slide/(SLIDES.length-1))*100);
+  if(sl.type==='register'){
+    app.innerHTML=`<div class="slide" style="text-align:center">
+<div class="pbar-top"><div class="pfill-top" style="width:${progress}%"></div></div>
+<h1 class="main">⚙️ Métodos de Lange y Escalación</h1>
+<p class="desc" style="font-size:1.05rem">Sesión 2 — Formulación y Evaluación de Proyectos<br>
+<strong style="color:var(--g)">UNIPAZ · Marzo 2026</strong></p>
+<div style="max-width:420px;margin:24px auto">
+<input class="input-field" id="nameInput" placeholder="🧑‍🎓 Escribe tu nombre completo" onkeypress="if(event.key==='Enter')startPresentation()">
+<button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="startPresentation()">Comenzar sesión →</button>
+</div></div>`;
+    setTimeout(()=>{const i=document.getElementById('nameInput');if(i)i.focus()},100);
+  }else if(sl.type==='content'){
+    app.innerHTML=`<div class="slide scrollable">
+<div class="pbar-top"><div class="pfill-top" style="width:${progress}%"></div></div>
+<div class="topbar"><span class="badge">${sl.badge||''}</span><span class="counter">${S.slide}/${SLIDES.length-1} · ${S.name}</span></div>
+${sl.html}
+<div class="nav"><button class="btn btn-ghost" onclick="prev()">← Anterior</button><button class="btn btn-primary" onclick="next()">Siguiente →</button></div></div>`;
+  }else if(sl.type==='quiz')renderQuiz(sl);
+  else if(sl.type==='match')renderMatch(sl);
+  else if(sl.type==='tf')renderTF(sl);
+  else if(sl.type==='results')renderResults();
+  window.scrollTo(0,0);
+}
+function renderQuiz(sl){
+  if(!S.quizState||S.quizState.slideIdx!==S.slide)
+    S.quizState={slideIdx:S.slide,qi:0,answered:false,selected:-1,correct:0};
+  const qs=S.quizState,q=sl.questions[qs.qi];
+  const progress=Math.round((S.slide/(SLIDES.length-1))*100);
+  const letters=['A','B','C','D'];
+  const ctx=sl.context&&qs.qi===0?`<div class="highlight"><p class="desc" style="margin:0;font-size:.82rem">${sl.context}</p></div>`:'';
+  let opts=q.o.map((o,i)=>{
+    let c='opt';
+    if(qs.answered){c+=' disabled';if(i===q.c)c+=' correct';else if(i===qs.selected)c+=' wrong';}
+    return `<div class="${c}" onclick="quizAnswer(${i})"><span class="opt-letter">${letters[i]}</span><span>${o}</span></div>`;
+  }).join('');
+  let fb='';
+  if(qs.answered){
+    const ok=qs.selected===q.c;
+    fb=`<div class="feedback ${ok?'ok':'bad'}">${ok?'✅ ¡Correcto! ':'❌ Incorrecto. '}${q.f}</div>
+<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="quizNext()">${qs.qi<sl.questions.length-1?'Siguiente pregunta →':'Ver resultados →'}</button>`;
+  }
+  document.getElementById('app').innerHTML=`<div class="slide scrollable">
+<div class="pbar-top"><div class="pfill-top" style="width:${progress}%"></div></div>
+<div class="topbar"><span class="badge">${sl.badge}</span><span class="counter">${S.name} · ${qs.qi+1}/${sl.questions.length}</span></div>
+<div class="game-area"><div class="game-title">🎮 ${sl.title}</div>${ctx}
+<p style="font-size:.73rem;color:var(--a);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:6px">Pregunta ${qs.qi+1} de ${sl.questions.length}</p>
+<p style="font-size:1rem;font-weight:600;line-height:1.6;margin-bottom:14px">${q.q}</p>
+<div>${opts}</div>${fb}</div>
+<div class="nav"><button class="btn btn-ghost" onclick="prev()">← Anterior</button><span></span></div></div>`;
+}
+function quizAnswer(i){
+  if(S.quizState.answered)return;
+  S.quizState.answered=true;S.quizState.selected=i;
+  const q=SLIDES[S.slide].questions[S.quizState.qi];
+  if(i===q.c){S.quizState.correct++;S.score++;}
+  S.total++;
+  S.answers.push({q:q.q,selected:q.o[i],correct:q.o[q.c],isCorrect:i===q.c,game:SLIDES[S.slide].title});
+  render();
+}
+function quizNext(){
+  const sl=SLIDES[S.slide];
+  if(S.quizState.qi<sl.questions.length-1){S.quizState.qi++;S.quizState.answered=false;S.quizState.selected=-1;render();}
+  else next();
+}
+function renderTF(sl){
+  if(!S.tfState||S.tfState.slideIdx!==S.slide)
+    S.tfState={slideIdx:S.slide,qi:0,answered:false,selected:null};
+  const ts=S.tfState,st=sl.statements[ts.qi];
+  const progress=Math.round((S.slide/(SLIDES.length-1))*100);
+  let btns='';
+  if(!ts.answered){
+    btns=`<div style="display:flex;gap:14px;margin-top:18px">
+<div class="tf-btn" onclick="tfAnswer(true)" style="border-color:var(--ok)">✅ Verdadero</div>
+<div class="tf-btn" onclick="tfAnswer(false)" style="border-color:var(--no)">❌ Falso</div></div>`;
+  }else{
+    const ok=ts.selected===st.a;
+    btns=`<div style="display:flex;gap:14px;margin-top:14px">
+<div class="tf-btn ${ts.selected===true?(ok?'sel-true':'sel-false'):''}" style="opacity:${ts.selected===true?1:.5}">✅ Verdadero</div>
+<div class="tf-btn ${ts.selected===false?(ok?'sel-true':'sel-false'):''}" style="opacity:${ts.selected===false?1:.5}">❌ Falso</div></div>
+<div class="feedback ${ok?'ok':'bad'}">${ok?'✅ ¡Correcto! ':'❌ Incorrecto. '}${st.f}</div>
+<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="tfNext()">${ts.qi<sl.statements.length-1?'Siguiente →':'Continuar →'}</button>`;
+  }
+  document.getElementById('app').innerHTML=`<div class="slide scrollable">
+<div class="pbar-top"><div class="pfill-top" style="width:${progress}%"></div></div>
+<div class="topbar"><span class="badge">${sl.badge}</span><span class="counter">${S.name} · ${ts.qi+1}/${sl.statements.length}</span></div>
+<div class="game-area"><div class="game-title">${sl.title}</div>
+<p style="font-size:.73rem;color:var(--a);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:8px">Afirmación ${ts.qi+1} de ${sl.statements.length}</p>
+<p style="font-size:1.05rem;font-weight:700;line-height:1.7;margin-bottom:8px;padding:15px;background:rgba(26,26,62,.5);border-radius:12px;border-left:3px solid var(--w)">"${st.s}"</p>
+${btns}</div>
+<div class="nav"><button class="btn btn-ghost" onclick="prev()">← Anterior</button><span></span></div></div>`;
+}
+function tfAnswer(val){
+  if(S.tfState.answered)return;
+  S.tfState.answered=true;S.tfState.selected=val;
+  const st=SLIDES[S.slide].statements[S.tfState.qi];
+  const ok=val===st.a;
+  if(ok)S.score++;
+  S.total++;
+  S.answers.push({q:st.s,selected:val?'Verdadero':'Falso',correct:st.a?'Verdadero':'Falso',isCorrect:ok,game:SLIDES[S.slide].title});
+  render();
+}
+function tfNext(){
+  const sl=SLIDES[S.slide];
+  if(S.tfState.qi<sl.statements.length-1){S.tfState.qi++;S.tfState.answered=false;S.tfState.selected=null;render();}
+  else next();
+}
+function renderMatch(sl){
+  if(!S.matchState||S.matchState.slideIdx!==S.slide)
+    S.matchState={slideIdx:S.slide,selectedLeft:-1,matched:[],wrongFlash:-1,feedback:null};
+  const ms=S.matchState;
+  const progress=Math.round((S.slide/(SLIDES.length-1))*100);
+  const done=ms.matched.length===sl.pairs.length;
+  const uniq=[...new Set(sl.pairs.map(p=>p.right))];
+  let items=sl.pairs.map((p,i)=>{
+    const m=ms.matched.includes(i);let c='match-item';
+    if(m)c+=' matched';else if(ms.selectedLeft===i)c+=' selected';
+    if(ms.wrongFlash===i)c+=' wrong-flash';
+    return `<div class="${c}" style="text-align:left;padding:12px 16px" onclick="matchPickLeft(${i})">${m?'✅ ':''}${p.left}</div>`;
+  }).join('');
+  let btns=ms.selectedLeft>=0&&!done?uniq.map(u=>{
+    const em=sl.pairs.find(p=>p.right===u)?.emoji||'';
+    return `<div class="tf-btn" onclick="matchPickRight('${u}')" style="flex:1;font-size:1.1rem;padding:22px 12px;border-color:var(--b)">${em} ${u}</div>`;
+  }).join(''):`<p style="text-align:center;font-size:.82rem;color:var(--m);margin-top:4px">${done?'':'👆 Selecciona un concepto de arriba primero'}</p>`;
+  let fb=ms.feedback?`<div class="feedback ${ms.feedback.ok?'ok':'bad'}" style="margin-top:10px">${ms.feedback.ok?'✅ ¡Correcto! ':'❌ Incorrecto. '}${ms.feedback.text}</div>`:'';
+  let st=done?`<div class="feedback ok" style="text-align:center;margin-top:14px">🎉 ¡Todas las parejas correctas!</div>
+<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="next()">Continuar →</button>`:'';
+  document.getElementById('app').innerHTML=`<div class="slide scrollable">
+<div class="pbar-top"><div class="pfill-top" style="width:${progress}%"></div></div>
+<div class="topbar"><span class="badge">${sl.badge}</span><span class="counter">${S.name} · ${ms.matched.length}/${sl.pairs.length}</span></div>
+<div class="game-area"><div class="game-title">🔗 ${sl.title}</div>
+<p class="drag-label" style="margin-bottom:8px">📌 Selecciona el concepto y elige a qué método pertenece:</p>
+<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">${items}</div>
+<p class="drag-label" style="margin-bottom:8px">🏷️ ¿A qué método pertenece?</p>
+<div style="display:flex;gap:14px;margin-bottom:6px">${btns}</div>${fb}${st}</div>
+<div class="nav"><button class="btn btn-ghost" onclick="prev()">← Anterior</button><span></span></div></div>`;
+}
+function matchPickLeft(idx){
+  const ms=S.matchState;
+  if(ms.matched.includes(idx))return;
+  ms.selectedLeft=idx;ms.feedback=null;render();
+}
+function matchPickRight(val){
+  const sl=SLIDES[S.slide],ms=S.matchState;
+  if(ms.selectedLeft<0)return;
+  const p=sl.pairs[ms.selectedLeft];
+  const ok=p.right===val;
+  if(ok){ms.matched.push(ms.selectedLeft);S.score++;S.total++;
+    S.answers.push({q:p.left,selected:val,correct:p.right,isCorrect:true,game:sl.title});
+    ms.feedback={ok:true,text:p.left+' → '+p.right};
+  }else{S.total++;ms.wrongFlash=ms.selectedLeft;
+    S.answers.push({q:p.left,selected:val,correct:p.right,isCorrect:false,game:sl.title});
+    ms.feedback={ok:false,text:p.left+' pertenece a '+p.right+', no a '+val+'.'};
+    setTimeout(()=>{ms.wrongFlash=-1;render()},600);
+  }
+  ms.selectedLeft=-1;render();
+}
+function renderResults(){
+  const pct=S.total>0?Math.round((S.score/S.total)*100):0;
+  const grade=(pct/100*5).toFixed(1);
+  const msg=pct>=80?'🌟 ¡Excelente!':pct>=60?'👍 ¡Buen trabajo!':'📚 Repasa y vuelve a intentarlo';
+  let d=S.answers.map((a,i)=>`<div class="r-item ${a.isCorrect?'ok':'bad'}">
+<span>${a.isCorrect?'✅':'❌'}</span>
+<span style="flex:1;font-size:.75rem">${i+1}. ${(a.q+'').substring(0,60)}...</span></div>`).join('');
+  document.getElementById('app').innerHTML=`<div class="slide scrollable">
+<div class="pbar-top"><div class="pfill-top" style="width:100%"></div></div>
+<h2 class="section" style="text-align:center">📊 Resultados — Sesión 2</h2>
+<div class="score-panel">
+<div class="score-big">${S.score}/${S.total}</div>
+<div class="score-label">${pct}% → Nota estimada: <strong>${grade}/5.0</strong><br>${msg}</div></div>
+<div style="max-height:300px;overflow-y:auto;margin:14px 0">${d}</div>
+<p class="status-msg" id="sendStatus">📤 Enviando resultados al registro...</p>
+<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="location.reload()">🔄 Reiniciar sesión</button></div>`;
+  sendResults(pct,grade);
+}
+function startPresentation(){
+  const name=document.getElementById('nameInput').value.trim();
+  if(!name){alert('Por favor escribe tu nombre completo');return;}
+  S.name=name;S.slide=1;render();
+}
+function next(){if(S.slide<SLIDES.length-1){S.slide++;S.quizState=null;S.matchState=null;S.tfState=null;render();}}
+function prev(){if(S.slide>1){S.slide--;S.quizState=null;S.matchState=null;S.tfState=null;render();}}
+document.addEventListener('keydown',e=>{
+  if((e.key==='ArrowRight'||e.key===' ')&&SLIDES[S.slide].type==='content')next();
+  if(e.key==='ArrowLeft')prev();
+});
+function sendResults(pct,grade){
+  const payload={
+    actividad:'Sesion2_Lange_Escalacion',nombre:S.name,
+    puntaje:S.score+'/'+S.total,porcentaje:pct+'%',nota:grade+'/5.0',
+    total:S.total,correctas:S.score,
+    detalle:S.answers.map((a,i)=>({n:i+1,q:(a.q+'').substring(0,80),r:(a.selected+'').substring(0,50),ok:a.isCorrect?'SI':'NO'})),
+    fecha:new Date().toLocaleString('es-CO',{timeZone:'America/Bogota'})
+  };
+  fetch('https://script.google.com/macros/s/AKfycbzR8tdOKuBLuVxvcXhfPqTGDzDkJfmPh6mkOTLsPXPqEQtAtpTRzX9NqaGqxnL02WSR/exec',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(()=>{const el=document.getElementById('sendStatus');if(el)el.textContent='✅ Resultados guardados en el registro del curso';})
+  .catch(()=>{const el=document.getElementById('sendStatus');if(el)el.textContent='⚠ No se pudo enviar. Muéstrale esta pantalla al profesor.';});
+}
+render();
+
+</script>
+</body>
+</html>
